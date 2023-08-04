@@ -3,4 +3,3 @@
 *.pyc
 terraform/.terraform/
 .DS_Store
-credentials.json
