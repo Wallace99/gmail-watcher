@@ -55,7 +55,6 @@ def watch_labels(creds: Credentials):
         for label in labels:
             if label['name'] in label_map.keys():
                 print(label['name'] + " " + label['id'])
-                print(label_map[label["name"]])
                 request = {
                     'labelIds': [label["id"]],
                     'topicName': label_map[label["name"]],
