@@ -1,6 +1,5 @@
-from __future__ import print_function
+import os
 
-import yaml
 from google.auth.transport.requests import Request
 from google.cloud import datastore
 from google.oauth2.credentials import Credentials
@@ -8,11 +7,10 @@ from googleapiclient.discovery import build
 
 client = datastore.Client()
 
-# If modifying these scopes, delete the file token.json.
 SCOPES = ['https://www.googleapis.com/auth/gmail.readonly']
 
 
-def authenticate():
+def authenticate(force_refresh: bool = False):
     creds = None
     query = client.query(kind="Auth")
     results = list(query.fetch())
@@ -27,15 +25,25 @@ def authenticate():
     if not creds or not creds.valid:
         if creds and creds.expired and creds.refresh_token:
             creds.refresh(Request())
+            print("Creds refreshed.")
         else:
             raise Exception("Refresh token expired! Run auth script to setup creds.")
+
+    if force_refresh:
+        creds.refresh(Request())
+        print("Creds refreshed.")
 
     return creds
 
 
-def watch_labels(creds):
-    with open('conf.yaml', 'r') as file:
-        labels_to_watch = yaml.safe_load(file)
+def watch_labels(creds: Credentials):
+    labels_to_watch = os.environ["labels_to_watch"].split(",")
+    if len(labels_to_watch) % 2 != 0:
+        raise Exception("Malformed label map.")
+
+    label_map = {}
+    while labels_to_watch:
+        label_map[labels_to_watch.pop(0)] = labels_to_watch.pop(0)
 
     service = build('gmail', 'v1', credentials=creds)
     results = service.users().labels().list(userId='me').execute()
@@ -45,31 +53,19 @@ def watch_labels(creds):
     else:
         print('Labels:')
         for label in labels:
-            if label['name'] in labels_to_watch.keys():
+            if label['name'] in label_map.keys():
                 print(label['name'] + " " + label['id'])
-                print(labels_to_watch[label["name"]])
+                print(label_map[label["name"]])
                 request = {
                     'labelIds': [label["id"]],
-                    'topicName': labels_to_watch[label["name"]],
+                    'topicName': label_map[label["name"]],
                     'labelFilterBehavior': 'INCLUDE'
                 }
                 results = service.users().watch(userId='me', body=request).execute()
                 print(results)
 
-        # results = service.users().watch(userId='me', body=request).execute()
-    #     results = service.users().messages().list(
-    #         userId='me',
-    #         q='newer_than:2d',
-    #         labelIds=['Label_2843525942517274814'],
-    #         includeSpamTrash=False
-    #     ).execute()
-    #     print(results)
-    #
-    # except HttpError as error:
-    #     # TODO(developer) - Handle errors from gmail API.
-    #     print(f'An error occurred: {error}')
-
 
 if __name__ == '__main__':
-    credentials = authenticate()
+    credentials = authenticate(True if os.environ["force_refresh"].lower() == "true" else False)
     watch_labels(credentials)
+
