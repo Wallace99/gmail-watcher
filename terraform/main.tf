@@ -3,12 +3,12 @@ locals {
 }
 
 resource "google_service_account" "cloud_run_sa" {
-  account_id = "mail-watcher"
+  account_id = "gmail-watcher"
   project    = var.project_id
 }
 
-resource "google_cloud_run_v2_job" "mail_watcher" {
-  name     = "mail-watcher"
+resource "google_cloud_run_v2_job" "gmail_watcher" {
+  name     = "gmail-watcher"
   location = "us-central1"
 
   template {
@@ -16,7 +16,7 @@ resource "google_cloud_run_v2_job" "mail_watcher" {
       service_account = google_service_account.cloud_run_sa.email
 
       containers {
-        image = "${var.location}-docker.pkg.dev/${var.project_id}/artifact-registry/mail-watcher:${var.image_tag}"
+        image = "${var.location}-docker.pkg.dev/${var.project_id}/artifact-registry/gmail-watcher:${var.image_tag}"
 
         env {
           name  = "force_refresh"
