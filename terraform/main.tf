@@ -7,6 +7,12 @@ resource "google_service_account" "cloud_run_sa" {
   project    = var.project_id
 }
 
+resource "google_project_iam_member" "datastore_user" {
+  project = var.project_id
+  member = "serviceAccount:${google_service_account.cloud_run_sa.email}"
+  role = "roles/datastore.user"
+}
+
 resource "google_cloud_run_v2_job" "gmail_watcher" {
   name     = "gmail-watcher"
   location = "us-central1"
