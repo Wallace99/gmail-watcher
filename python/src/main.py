@@ -60,7 +60,7 @@ def watch_labels(creds: Credentials):
                 print(label['name'] + " " + label['id'])
                 request = {
                     'labelIds': [label["id"]],
-                    'topicName': label_map[label["name"]],
+                    'topicName': label_map[label['name'].lower().replace(" ", "_")],
                     'labelFilterBehavior': 'INCLUDE'
                 }
                 results = service.users().watch(userId='me', body=request).execute()
