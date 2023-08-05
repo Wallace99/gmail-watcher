@@ -53,7 +53,7 @@ def watch_labels(creds: Credentials):
     else:
         print('Labels:')
         for label in labels:
-            if label['name'] in label_map.keys():
+            if label['name'].lower().replace(" ", "_") in label_map.keys():
                 print(label['name'] + " " + label['id'])
                 request = {
                     'labelIds': [label["id"]],
