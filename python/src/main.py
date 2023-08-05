@@ -43,7 +43,9 @@ def watch_labels(creds: Credentials):
 
     label_map = {}
     while labels_to_watch:
-        label_map[labels_to_watch.pop(0)] = labels_to_watch.pop(0)
+        label_name = labels_to_watch.pop(0)
+        label_topic = labels_to_watch.pop(0)
+        label_map[label_name] = label_topic
     print(label_map)
 
     service = build('gmail', 'v1', credentials=creds)
