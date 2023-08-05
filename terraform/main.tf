@@ -74,7 +74,7 @@ resource "google_pubsub_topic_iam_member" "gmail_member" {
 
 resource "google_cloud_scheduler_job" "trigger_job" {
   name             = "schedule-gmail-watcher"
-  schedule         = "0 0 */6 * *"
+  schedule         = "0 9 * * 1"
   attempt_deadline = "320s"
   region           = var.location
   project          = var.project_id
