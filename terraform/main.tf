@@ -45,3 +45,13 @@ resource "google_pubsub_topic" "label_topics" {
 
   message_retention_duration = "86600s"
 }
+
+resource "google_pubsub_topic_iam_member" "gmail_member" {
+  for_each = google_pubsub_topic.label_topics
+
+  project = var.project_id
+  topic = each.value.id
+  role = "roles/pubsub.publisher"
+  member = "serviceAccount:gmail-api-push@system.gserviceaccount.com"
+}
+
