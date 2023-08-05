@@ -21,7 +21,7 @@ resource "google_cloud_run_v2_job_iam_member" "cloud_run_invoker_member" {
   location = google_cloud_run_v2_job.gmail_watcher.location
   name = google_cloud_run_v2_job.gmail_watcher.name
   role = "roles/run.invoker"
-  member = "serviceAccount:${google_service_account.cloud_run_scheduler}"
+  member = "serviceAccount:${google_service_account.cloud_run_scheduler.email}"
 }
 
 resource "google_project_iam_member" "datastore_user" {
