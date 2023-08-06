@@ -89,7 +89,7 @@ def process_labels(creds: Credentials, labels_to_process: str = None):
     label_ids_to_gcs = get_relevant_label_ids(service, label_map)
 
     for label_id in label_ids_to_gcs.keys():
-        results = service.users().messages().list(userId="me", labelIds=[label_id], q="newer_than:7d",
+        results = service.users().messages().list(userId="me", labelIds=[label_id], q="newer_than:1d",
                                                   maxResults=1).execute()
         process_message_for_label(service, results, label_ids_to_gcs[label_id])
 
