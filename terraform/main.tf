@@ -1,5 +1,5 @@
 locals {
-  topic_map_string = join(",", [for t in google_pubsub_topic.label_topics : "${t.name},${t.id}"])
+  bucket_map_string = join(",", [for t in var.labels : "${replace(lower(t), " ", "_")},${replace(lower(t), " ", "_")}"])
 }
 
 data "google_project" "project" {
@@ -47,29 +47,29 @@ resource "google_cloud_run_v2_job" "gmail_watcher" {
         }
 
         env {
-          name  = "labels_to_watch"
-          value = local.topic_map_string
+          name  = "labels_to_process"
+          value = local.bucket_map_string
         }
       }
     }
   }
 }
 
-resource "google_pubsub_topic" "label_topics" {
+resource "google_storage_bucket" "file_bucket" {
   for_each = toset(var.labels)
-  name     = replace(lower(each.value), " ", "_")
-  project  = var.project_id
+  name          = replace(lower(each.value), " ", "_")
+  location      = var.location
+  force_destroy = true
+  project = var.project_id
 
-  message_retention_duration = "86600s"
+  public_access_prevention = "enforced"
 }
 
-resource "google_pubsub_topic_iam_member" "gmail_member" {
-  for_each = google_pubsub_topic.label_topics
-
-  project = var.project_id
-  topic = each.value.id
-  role = "roles/pubsub.publisher"
-  member = "serviceAccount:gmail-api-push@system.gserviceaccount.com"
+resource "google_storage_bucket_iam_member" "storage_member" {
+  for_each = google_storage_bucket.file_bucket
+  bucket = google_storage_bucket.file_bucket[each.key].id
+  role = "roles/storage.admin"
+  member = "serviceAccount:${google_service_account.cloud_run_sa.email}"
 }
 
 resource "google_cloud_scheduler_job" "trigger_job" {
