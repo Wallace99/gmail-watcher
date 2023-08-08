@@ -1,13 +1,14 @@
 import base64
 import io
 import os
-from typing import List, Dict
+import zipfile
 
+from typing import Dict
 from google.auth.transport.requests import Request
 from google.cloud import datastore
+from google.cloud import storage
 from google.oauth2.credentials import Credentials
 from googleapiclient.discovery import build
-from google.cloud import storage
 
 client = datastore.Client()
 
@@ -94,6 +95,21 @@ def process_labels(creds: Credentials, labels_to_process: str = None):
         process_message_for_label(service, results, label_ids_to_gcs[label_id])
 
 
+def upload_unzipped_files_to_gcs(attachment_data, gcs_link):
+    attachment_bytes = base64.urlsafe_b64decode(attachment_data['data'])
+
+    with io.BytesIO(attachment_bytes) as zip_file_stream:
+        with zipfile.ZipFile(zip_file_stream, 'r') as zip_ref:
+            storage_client = storage.Client()
+            bucket = storage_client.bucket(gcs_link)
+
+            for file_name in zip_ref.namelist():
+                blob = bucket.blob(file_name)
+                blob.upload_from_file(zip_ref.open(file_name))
+
+                print(f"Uploaded {file_name} to GCS.")
+
+
 def process_message_for_label(service, label_results: dict, gcs_link: str):
     if "messages" not in label_results.keys() or len(label_results["messages"]) == 0:
         print("No messages detected for label.")
@@ -114,6 +130,10 @@ def process_message_for_label(service, label_results: dict, gcs_link: str):
                 messageId=message_id,
                 id=attachment_id
             ).execute()
+
+            if filename.lower().endswith(".zip"):
+                upload_unzipped_files_to_gcs(attachment_data, gcs_link)
+                break
 
             storage_client = storage.Client()
             bucket = storage_client.bucket(gcs_link)
