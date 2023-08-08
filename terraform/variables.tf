@@ -20,7 +20,13 @@ variable "force_refresh_creds" {
   default     = true
 }
 
-variable "labels" {
-  description = "List of Gmail labels."
-  type        = list(string)
+
+variable "label_config" {
+  description = "Configuration for Gmail labels."
+  type = list(object({
+    name         = string
+    label_id     = string
+    bucket_name  = string
+    days_to_keep = number # 0 means forever
+  }))
 }
