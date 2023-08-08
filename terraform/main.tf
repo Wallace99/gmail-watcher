@@ -37,6 +37,7 @@ resource "google_cloud_run_v2_job" "gmail_watcher" {
   template {
     template {
       service_account = google_service_account.cloud_run_sa.email
+      max_retries = 1
 
       containers {
         image = "${var.location}-docker.pkg.dev/${var.project_id}/artifact-registry/gmail-watcher:${var.image_tag}"

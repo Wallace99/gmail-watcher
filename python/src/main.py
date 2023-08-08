@@ -95,7 +95,7 @@ def process_labels(creds: Credentials, labels_to_process: str = None):
 
 
 def process_message_for_label(service, label_results: dict, gcs_link: str):
-    if len(label_results["messages"]) == 0:
+    if "messages" not in label_results.keys() or len(label_results["messages"]) == 0:
         print("No messages detected for label.")
         return {}
 
