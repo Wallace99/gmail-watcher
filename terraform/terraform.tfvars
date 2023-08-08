@@ -1,4 +1,4 @@
 project_id = "rising-sector-360922"
-image_tag = "bdf8da97f3a8c109a6d83aa6b1bdbe4dfe11900f"
+image_tag = "26c5d06539744d11ab1abcd76087b305d682f94a"
 
 labels = ["Council Data DVR", "Council Data Sales"]
