@@ -57,7 +57,7 @@ resource "google_cloud_run_v2_job" "gmail_watcher" {
 }
 
 resource "google_storage_bucket" "file_bucket" {
-  for_each      = { for item in var.label_config : item.label_id => item }
+  for_each      = { for item in var.label_config : item.name => item }
   name          = each.value.bucket_name
   location      = var.location
   force_destroy = true
