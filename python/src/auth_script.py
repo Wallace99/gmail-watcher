@@ -14,7 +14,7 @@ flow = InstalledAppFlow.from_client_secrets_file(
 creds = flow.run_local_server(port=0)
 creds_dict = json.loads(creds.to_json())
 
-entity = datastore.Entity(key=client.key("Auth"))
+entity = datastore.Entity(key=client.key("Auth", "creds"))
 for key, value in creds_dict.items():
     entity[key] = value
 

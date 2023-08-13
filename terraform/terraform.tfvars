@@ -1,5 +1,5 @@
 project_id = "rising-sector-360922"
-image_tag = "5a94dec9955970524c44bddda0e674e031057490"
+image_tag = "17f6b8515b256f2148f904bb0052a18b922dca2f"
 
 label_config = [
   {

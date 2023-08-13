@@ -2,6 +2,7 @@ import base64
 import io
 import os
 import zipfile
+import json
 
 from typing import Dict
 from google.auth.transport.requests import Request
@@ -17,11 +18,9 @@ SCOPES = ['https://www.googleapis.com/auth/gmail.readonly']
 
 def authenticate(force_refresh: bool = False):
     creds = None
-    query = client.query(kind="Auth")
-    results = list(query.fetch())
+    result = client.get(key=client.key("Auth", "creds"))
 
-    if results:
-        result = results[0]
+    if result:
         creds_dict = {}
         for key, value in result.items():
             creds_dict[key] = value
@@ -37,6 +36,12 @@ def authenticate(force_refresh: bool = False):
     if force_refresh:
         creds.refresh(Request())
         print("Forced creds refresh.")
+
+    entity = datastore.Entity(key=client.key("Auth", "creds"))
+    creds_dict = json.loads(creds.to_json())
+    for key, value in creds_dict.items():
+        entity[key] = value
+    client.put(entity)
 
     return creds
 
