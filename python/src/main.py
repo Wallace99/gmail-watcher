@@ -153,7 +153,6 @@ def process_message_for_label(service, label_results: dict, gcs_link: str):
 
 if __name__ == '__main__':
     # force_refresh = "false"
-    # force_refresh = os.environ["force_refresh"].lower()
-    # credentials = authenticate(True if force_refresh == "true" else False)
-    # process_labels(credentials)
-    authenticate(True)
+    force_refresh = os.environ["force_refresh"].lower()
+    credentials = authenticate(True if force_refresh == "true" else False)
+    process_labels(credentials)
