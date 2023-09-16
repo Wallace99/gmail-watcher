@@ -64,6 +64,19 @@ resource "google_storage_bucket" "file_bucket" {
   project       = var.project_id
 
   public_access_prevention = "enforced"
+  dynamic "lifecycle_rule" {
+    for_each = each.value.days_to_keep != 0 ? [1] : []
+
+    content {
+      action {
+        type = "Delete"
+      }
+
+      condition {
+        age = each.value.days_to_keep
+      }
+    }
+  }
 }
 
 resource "google_storage_bucket_iam_member" "storage_member" {
