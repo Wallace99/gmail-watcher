@@ -60,7 +60,7 @@ resource "google_storage_bucket" "file_bucket" {
   for_each      = { for item in var.label_config : item.name => item }
   name          = each.value.bucket_name
   location      = var.location
-  force_destroy = true
+  force_destroy = false
   project       = var.project_id
 
   public_access_prevention = "enforced"
