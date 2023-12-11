@@ -40,7 +40,7 @@ resource "google_cloud_run_v2_job" "gmail_watcher" {
       max_retries     = 1
 
       containers {
-        image = "us-central1-docker.pkg.dev/${var.project_id}/docker-images/gmail-watcher:${var.image_tag}"
+        image = "us-central1-docker.pkg.dev/${var.project_id}/artifact-registry/gmail-watcher:${var.image_tag}"
 
         env {
           name  = "force_refresh"
