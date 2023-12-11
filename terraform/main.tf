@@ -32,7 +32,7 @@ resource "google_project_iam_member" "datastore_user" {
 
 resource "google_cloud_run_v2_job" "gmail_watcher" {
   name     = "gmail-watcher"
-  location = "us-central1"
+  location = var.location
 
   template {
     template {
