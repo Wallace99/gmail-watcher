@@ -32,7 +32,7 @@ resource "google_project_iam_member" "datastore_user" {
 
 resource "google_cloud_run_v2_job" "gmail_watcher" {
   name     = "gmail-watcher"
-  location = "us-central1"
+  location = var.location
 
   template {
     template {
@@ -40,7 +40,7 @@ resource "google_cloud_run_v2_job" "gmail_watcher" {
       max_retries     = 1
 
       containers {
-        image = "${var.location}-docker.pkg.dev/${var.project_id}/artifact-registry/gmail-watcher:${var.image_tag}"
+        image = "us-central1-docker.pkg.dev/${var.project_id}/docker-images/gmail-watcher:${var.image_tag}"
 
         env {
           name  = "force_refresh"
@@ -60,7 +60,7 @@ resource "google_storage_bucket" "file_bucket" {
   for_each      = { for item in var.label_config : item.name => item }
   name          = each.value.bucket_name
   location      = var.location
-  force_destroy = true
+  force_destroy = false
   project       = var.project_id
 
   public_access_prevention = "enforced"
