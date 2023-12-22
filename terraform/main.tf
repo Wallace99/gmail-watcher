@@ -88,7 +88,7 @@ resource "google_storage_bucket_iam_member" "storage_member" {
 
 resource "google_cloud_scheduler_job" "trigger_job" {
   name             = "schedule-gmail-watcher"
-  schedule         = "0 8 * * *"
+  schedule         = "0 0 * * *"
   attempt_deadline = "320s"
   region           = var.location
   project          = var.project_id
